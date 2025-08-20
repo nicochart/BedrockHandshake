@@ -1,0 +1,35 @@
+{
+	"schemaVersion": 1,
+	"id": "bedrock_handshake",
+	"version": "${version}",
+	"name": "Bedrock Handshake",
+	"description": "Bedrock Handshake",
+	"authors": ["nicochart"],
+	"contact": {
+		"homepage": "",
+		"sources": ""
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/bedrock_handshake/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"fr.factionbedrock.bedrockhandshake.BedrockHandshake"
+		],
+		"client": [
+			"fr.factionbedrock.bedrockhandshake.BedrockHandshake"
+		]
+	},
+	"mixins": [
+		"bedrock_handshake.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21.4",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

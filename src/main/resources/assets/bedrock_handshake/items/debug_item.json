@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "bedrock_handshake:item/debug_item"
+  }
+}
