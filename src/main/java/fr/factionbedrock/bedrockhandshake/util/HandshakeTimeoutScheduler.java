@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 public class HandshakeTimeoutScheduler
 {
-    private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private static ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     public static void schedule(MinecraftServer server, UUID playerId, ServerPlayerEntity player)
     {
@@ -19,15 +19,20 @@ public class HandshakeTimeoutScheduler
         {
             server.execute(() ->
             {
-                if (!player.isDisconnected() && PendingHandshakeTracker.isStillWaiting(playerId))
+                if (PendingHandshakeTracker.isStillWaiting(playerId))
                 {
                     PendingHandshakeTracker.unmark(player.getUuid());
-                    BedrockHandshakeHelper.increaseInfractionCount(player);
-                    player.networkHandler.disconnect(Text.literal("Kicked for not receiving mod list. Contact server administrator."));
+                    if (!player.isDisconnected())
+                    {
+                        BedrockHandshakeHelper.increaseInfractionCount(player);
+                        player.networkHandler.disconnect(Text.literal("Kicked for not receiving mod list. Contact server administrator."));
+                    }
                 }
             });
         }, 30, TimeUnit.SECONDS);
     }
+
+    public static void startScheduler() {scheduler = Executors.newSingleThreadScheduledExecutor();}
 
     public static void shutdownScheduler() {scheduler.shutdownNow();}
 }

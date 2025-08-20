@@ -27,7 +27,7 @@ public class BedrockHandshake implements ModInitializer, ClientModInitializer
 		BedrockHandshakeNetworking.registerData();
 		BedrockHandshakeNetworking.registerServerReceiver();
 		BedrockHandshakePlayerEvents.registerPlayerEvents();
-		BedrockHandshakeServerEvents.registerPlayerEvents();
+		BedrockHandshakeServerEvents.registerServerEvents();
 	}
 
 	@Override public void onInitializeClient()
