@@ -1,7 +1,7 @@
 package fr.factionbedrock.bedrockhandshake;
 
+import fr.factionbedrock.bedrockhandshake.client.events.BedrockHandshakeClientEvents;
 import fr.factionbedrock.bedrockhandshake.client.packet.ClientBedrockHandshakeNetworking;
-import fr.factionbedrock.bedrockhandshake.client.registry.BedrockHandshakeKeyBinds;
 import fr.factionbedrock.bedrockhandshake.events.BedrockHandshakePlayerEvents;
 import fr.factionbedrock.bedrockhandshake.events.BedrockHandshakeServerEvents;
 import fr.factionbedrock.bedrockhandshake.packet.BedrockHandshakeNetworking;
@@ -32,9 +32,8 @@ public class BedrockHandshake implements ModInitializer, ClientModInitializer
 
 	@Override public void onInitializeClient()
 	{
-		BedrockHandshakeKeyBinds.registerKeybinds();
-		BedrockHandshakeKeyBinds.registerPressedInteractions();
 		ClientBedrockHandshakeNetworking.registerClientReceiver();
+		BedrockHandshakeClientEvents.registerClientPlayEvents();
 	}
 
 	public static Identifier id(String path) {return Identifier.of(MOD_ID, path);}

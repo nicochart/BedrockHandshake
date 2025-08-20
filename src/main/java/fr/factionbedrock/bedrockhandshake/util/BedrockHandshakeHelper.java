@@ -36,6 +36,68 @@ public class BedrockHandshakeHelper
         });
     }
 
+    public static List<String> getLoadedModsList()
+    {
+        List<String> list = new ArrayList<>();
+
+        for (ModContainer mod : FabricLoader.getInstance().getAllMods())
+        {
+            String modId = mod.getMetadata().getId();
+            if (!modId.contains("fabric") && !modId.equals("java") && !modId.equals("minecraft") && !modId.equals("mixinextras")) {list.add(modId);}
+        }
+        return list;
+    }
+
+    public static List<String> getLoadedResourcePacksList(ResourcePackManager resourcePackManager)
+    {
+        //temporary solution to avoid mod list to appear in loaded packs
+        List<String> loadedModIds = getLoadedModsList();
+        List<String> loadedResourcePacks = new ArrayList<>();
+
+        Collection<ResourcePackProfile> enabledPacks = resourcePackManager.getEnabledProfiles();
+        if (enabledPacks.isEmpty()) {return loadedResourcePacks;}
+        for (ResourcePackProfile profile : enabledPacks)
+        {
+            if (!profile.getId().contains("fabric") && !loadedModIds.contains(profile.getId())) {loadedResourcePacks.add(profile.getDisplayName().getString());}
+        }
+        return loadedResourcePacks;
+    }
+
+    //temporary - needs to be logged instead
+    public static void messageLoadedThingsToPlayer(PlayerEntity player, List<String> modsList, List<String> packsList)
+    {
+        messageLoadedModsFromList(player, modsList);
+        messageLoadedPacksFromList(player, packsList);
+    }
+
+    public static void messageLoadedModsFromList(PlayerEntity player, List<String> list)
+    {
+        messageListToPlayer("mods", player, list);
+    }
+
+    public static void messageLoadedPacksFromList(PlayerEntity player, List<String> list)
+    {
+        messageListToPlayer("packs", player, list);
+    }
+
+    public static void messageListToPlayer(String category, PlayerEntity player, List<String> list)
+    {
+        String stringToSend = "";
+        if (list.isEmpty()) {stringToSend = "0 loaded " + category;}
+        else
+        {
+            int numberOfNotFabricMobs = list.size();
+            for (String modId : list)
+            {
+                stringToSend += "\""+modId+"\", ";
+            }
+            stringToSend = numberOfNotFabricMobs + " loaded " + category + " : " + stringToSend;
+        }
+
+        if (stringToSend.endsWith(", ")) {stringToSend = stringToSend.substring(0, stringToSend.length() - 2);}
+        player.sendMessage(Text.literal(stringToSend), false);
+    }
+
     public static void messageLoadedModsToPlayer(PlayerEntity player)
     {
         int numberOfMods = FabricLoader.getInstance().getAllMods().size();
@@ -62,15 +124,7 @@ public class BedrockHandshakeHelper
     public static void messageLoadedResourcePacksToPlayer(ResourcePackManager resourcePackManager, PlayerEntity player)
     {
         //temporary solution to avoid mod list to appear in loaded packs
-        List<String> loadedModIds = new ArrayList<>();
-        for (ModContainer mod : FabricLoader.getInstance().getAllMods())
-        {
-            String modId = mod.getMetadata().getId();
-            if (!modId.contains("fabric") && !modId.equals("java") && !modId.equals("minecraft") && !modId.equals("mixinextras"))
-            {
-                loadedModIds.add(modId);
-            }
-        }
+        List<String> loadedModIds = getLoadedModsList();
 
         String loadedPacks = "";
         int numberOfLoadedPacks = 0;
