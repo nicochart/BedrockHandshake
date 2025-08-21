@@ -4,6 +4,8 @@ import fr.factionbedrock.bedrockhandshake.BedrockHandshake;
 import fr.factionbedrock.bedrockhandshake.packet.BedrockHandshakeNetworking;
 import fr.factionbedrock.bedrockhandshake.packet.HandshakeData;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.BannedPlayerEntry;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -16,6 +18,7 @@ public class BedrockHandshakeVerifier
 
     public static void onHandshake(ServerPlayerEntity player, HandshakeData data)
     {
+        if (PendingHandshakeTracker.isStillWaiting(player.getUuid())) {PendingHandshakeTracker.unmark(player.getUuid());}
         Response response = verify(player, data.mods(), data.packs());
         InfractionType infractionType = response.type();
         String infractionList = response.list();
@@ -36,10 +39,17 @@ public class BedrockHandshakeVerifier
 
     public static void manageInvalidClient(ServerPlayerEntity player, String message)
     {
+        String disconnectMessage = message;
         if (!player.isDisconnected())
         {
+            MinecraftServer server = player.getServer();
+            if (BedrockHandshakeHelper.getInfractionCount(player) > 2 && server != null)
+            {
+                disconnectMessage = "You have been banned for multiple infractions.";
+                server.getPlayerManager().getUserBanList().add(new BannedPlayerEntry(player.getGameProfile(), null, BedrockHandshake.MOD_ID, null, disconnectMessage));
+            }
             BedrockHandshakeHelper.increaseInfractionCount(player);
-            player.networkHandler.disconnect(Text.literal(message));
+            player.networkHandler.disconnect(Text.literal(disconnectMessage));
         }
     }
 

@@ -122,9 +122,13 @@ public class BedrockHandshakeHelper
         player.sendMessage(Text.literal(loadedPacks), false);
     }
 
+    public static int getInfractionCount(PlayerEntity player)
+    {
+        return player.getDataTracker().get(BedrockHandshakeTrackedData.INFRACTION_COUNT);
+    }
+
     public static void increaseInfractionCount(PlayerEntity player)
     {
-        int oldCount = player.getDataTracker().get(BedrockHandshakeTrackedData.INFRACTION_COUNT);
-        player.getDataTracker().set(BedrockHandshakeTrackedData.INFRACTION_COUNT, oldCount + 1);
+        player.getDataTracker().set(BedrockHandshakeTrackedData.INFRACTION_COUNT, getInfractionCount(player) + 1);
     }
 }
