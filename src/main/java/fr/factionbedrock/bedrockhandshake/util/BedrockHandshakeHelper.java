@@ -6,7 +6,6 @@ import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -15,15 +14,6 @@ import java.util.List;
 
 public class BedrockHandshakeHelper
 {
-    public static void kickPlayerForInfraction(ServerPlayerEntity player, String message)
-    {
-        if (!player.isDisconnected())
-        {
-            BedrockHandshakeHelper.increaseInfractionCount(player);
-            player.networkHandler.disconnect(Text.literal(message));
-        }
-    }
-
     public static List<String> getLoadedModsList()
     {
         List<String> list = new ArrayList<>();

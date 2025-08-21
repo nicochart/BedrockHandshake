@@ -1,13 +1,11 @@
 package fr.factionbedrock.bedrockhandshake.packet;
 
 import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeVerifier;
-import fr.factionbedrock.bedrockhandshake.util.PendingHandshakeTracker;
 import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeHelper;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 
 public class BedrockHandshakeNetworking
 {
@@ -16,15 +14,25 @@ public class BedrockHandshakeNetworking
         return new HandshakeData(BedrockHandshakeHelper.getLoadedModsList(), BedrockHandshakeHelper.getLoadedResourcePacksList(resourcePackManager));
     }
 
-    public static final CustomData CONFIRMATION_PACKET = new CustomData("confirmation", 0); //S2C
+    public static ServerResponseData createServerResponsePacket(BedrockHandshakeVerifier.InfractionType infractionType, String infractionList) //S2C
+    {
+        return switch (infractionType)
+        {
+            case BedrockHandshakeVerifier.InfractionType.NONE -> new ServerResponseData("Client is authorized to join !");
+            case BedrockHandshakeVerifier.InfractionType.MOD -> new ServerResponseData("Client will be kicked. Mod infraction detected. "+infractionList);
+            case BedrockHandshakeVerifier.InfractionType.PACK -> new ServerResponseData("Client will be kicked. Pack infraction detected. "+infractionList);
+            case BedrockHandshakeVerifier.InfractionType.MOD_AND_PACK -> new ServerResponseData("Client will be kicked. Mod and pack infraction detected."+infractionList);
+            case BedrockHandshakeVerifier.InfractionType.NO_HANDSHAKE -> new ServerResponseData("Client will be kicked because no handshake."); //should never happen because response is sent only if server received list
+        };
+    }
 
     public static void registerData()
     {
         PayloadTypeRegistry.playC2S().register(HandshakeData.ID, HandshakeData.CODEC);
-        PayloadTypeRegistry.playS2C().register(CustomData.ID, CustomData.CODEC);
+        PayloadTypeRegistry.playS2C().register(ServerResponseData.ID, ServerResponseData.CODEC);
     }
 
-    public static void sendPacketFromServer(ServerPlayerEntity serverPlayer, CustomData payload)
+    public static void sendPacketFromServer(ServerPlayerEntity serverPlayer, ServerResponseData payload)
     {
         ServerPlayNetworking.send(serverPlayer, payload);
     }
@@ -33,14 +41,7 @@ public class BedrockHandshakeNetworking
     {
         ServerPlayNetworking.registerGlobalReceiver(HandshakeData.ID, (payload, context) ->
         {
-            context.player().sendMessage(Text.literal("Server Received Handshake Packet"), false);
-            PendingHandshakeTracker.unmark(context.player().getUuid());
-            BedrockHandshakeHelper.messageLoadedThingsToPlayer(context.player(), payload.mods(), payload.packs());
-            sendPacketFromServer(context.player(), CONFIRMATION_PACKET);
-            if (!BedrockHandshakeVerifier.verify(context.player(), payload.mods(), payload.packs()))
-            {
-                BedrockHandshakeHelper.kickPlayerForInfraction(context.player(), "Client Infraction detected");
-            }
+            BedrockHandshakeVerifier.onHandshake(context.player(), payload);
         });
     }
 }

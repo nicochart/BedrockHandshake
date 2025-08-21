@@ -2,7 +2,6 @@ package fr.factionbedrock.bedrockhandshake.util;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -21,8 +20,7 @@ public class HandshakeTimeoutScheduler
             {
                 if (PendingHandshakeTracker.isStillWaiting(playerId))
                 {
-                    PendingHandshakeTracker.unmark(player.getUuid());
-                    BedrockHandshakeHelper.kickPlayerForInfraction(player, "Kicked for not receiving mod list. Contact server administrator.");
+                    BedrockHandshakeVerifier.onMissingHandshake(player);
                 }
             });
         }, 10, TimeUnit.SECONDS);
