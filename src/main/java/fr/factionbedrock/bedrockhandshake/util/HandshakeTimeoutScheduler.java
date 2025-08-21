@@ -22,14 +22,10 @@ public class HandshakeTimeoutScheduler
                 if (PendingHandshakeTracker.isStillWaiting(playerId))
                 {
                     PendingHandshakeTracker.unmark(player.getUuid());
-                    if (!player.isDisconnected())
-                    {
-                        BedrockHandshakeHelper.increaseInfractionCount(player);
-                        player.networkHandler.disconnect(Text.literal("Kicked for not receiving mod list. Contact server administrator."));
-                    }
+                    BedrockHandshakeHelper.kickPlayerForInfraction(player, "Kicked for not receiving mod list. Contact server administrator.");
                 }
             });
-        }, 30, TimeUnit.SECONDS);
+        }, 10, TimeUnit.SECONDS);
     }
 
     public static void startScheduler() {scheduler = Executors.newSingleThreadScheduledExecutor();}

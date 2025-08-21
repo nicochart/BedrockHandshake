@@ -1,5 +1,6 @@
 package fr.factionbedrock.bedrockhandshake.packet;
 
+import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeVerifier;
 import fr.factionbedrock.bedrockhandshake.util.PendingHandshakeTracker;
 import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeHelper;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -36,6 +37,10 @@ public class BedrockHandshakeNetworking
             PendingHandshakeTracker.unmark(context.player().getUuid());
             BedrockHandshakeHelper.messageLoadedThingsToPlayer(context.player(), payload.mods(), payload.packs());
             sendPacketFromServer(context.player(), CONFIRMATION_PACKET);
+            if (!BedrockHandshakeVerifier.verify(context.player(), payload.mods(), payload.packs()))
+            {
+                BedrockHandshakeHelper.kickPlayerForInfraction(context.player(), "Client Infraction detected");
+            }
         });
     }
 }

@@ -1,39 +1,27 @@
 package fr.factionbedrock.bedrockhandshake.util;
 
-import fr.factionbedrock.bedrockhandshake.BedrockHandshake;
 import fr.factionbedrock.bedrockhandshake.registry.BedrockHandshakeTrackedData;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 public class BedrockHandshakeHelper
 {
-    public static void runFunction(ServerPlayerEntity user, String functionName)
+    public static void kickPlayerForInfraction(ServerPlayerEntity player, String message)
     {
-        MinecraftServer server = user.server;
-        ServerWorld world = user.getServerWorld();
-        Identifier functionId = BedrockHandshake.id(functionName);
-
-        Optional<CommandFunction<ServerCommandSource>> mcFunction = server.getCommandFunctionManager().getFunction(functionId);
-
-        mcFunction.ifPresent(function -> {
-            ServerCommandSource source = server.getCommandSource().withEntity(user).withWorld(world).withPosition(user.getPos()).withSilent();
-            server.getCommandFunctionManager().execute(function, source);
-        });
+        if (!player.isDisconnected())
+        {
+            BedrockHandshakeHelper.increaseInfractionCount(player);
+            player.networkHandler.disconnect(Text.literal(message));
+        }
     }
 
     public static List<String> getLoadedModsList()
