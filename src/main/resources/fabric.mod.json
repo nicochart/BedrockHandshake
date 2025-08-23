@@ -6,8 +6,8 @@
 	"description": "Bedrock Handshake",
 	"authors": ["nicochart"],
 	"contact": {
-		"homepage": "",
-		"sources": ""
+		"homepage": "https://www.curseforge.com/minecraft/mc-mods/bedrock-handshake",
+		"sources": "https://github.com/nicochart/BedrockHandshake"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/bedrock_handshake/icon.png",

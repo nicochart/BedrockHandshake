@@ -22,6 +22,7 @@ public class BedrockHandshakeVerifier
         if (!BedrockHandshakeHelper.isDedicated(player.server) && !BedrockHandshake.DO_HANDSHAKE_ON_INTEGRATED_SERVER)
         {
             BedrockHandshake.LOGGER.info("Bedrock Handshake - skipped player verification because server is not dedicated");
+            return;
         }
         Response response = verify(player, data.mods(), data.packs());
         InfractionType infractionType = response.type();
