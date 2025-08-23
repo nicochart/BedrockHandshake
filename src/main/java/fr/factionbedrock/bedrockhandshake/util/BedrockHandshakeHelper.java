@@ -6,6 +6,8 @@ import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -130,5 +132,10 @@ public class BedrockHandshakeHelper
     public static void increaseInfractionCount(PlayerEntity player)
     {
         player.getDataTracker().set(BedrockHandshakeTrackedData.INFRACTION_COUNT, getInfractionCount(player) + 1);
+    }
+
+    public static boolean isDedicated(MinecraftServer server)
+    {
+        return server instanceof DedicatedServer;
     }
 }

@@ -19,10 +19,14 @@ public class BedrockHandshakeVerifier
     public static void onHandshake(ServerPlayerEntity player, HandshakeData data)
     {
         if (PendingHandshakeTracker.isStillWaiting(player.getUuid())) {PendingHandshakeTracker.unmark(player.getUuid());}
+        if (!BedrockHandshakeHelper.isDedicated(player.server) && !BedrockHandshake.DO_HANDSHAKE_ON_INTEGRATED_SERVER)
+        {
+            BedrockHandshake.LOGGER.info("Bedrock Handshake - skipped player verification because server is not dedicated");
+        }
         Response response = verify(player, data.mods(), data.packs());
         InfractionType infractionType = response.type();
         String infractionList = response.list();
-        BedrockHandshake.LOGGER.info("Server verifying player " + player.getName().getString() + " : " + ((infractionList.isEmpty()) ? "no infraction" : infractionList));
+        BedrockHandshake.LOGGER.info("Bedrock Handshake - Server verifying player " + player.getName().getString() + " : " + infractionList);
         BedrockHandshakeNetworking.sendPacketFromServer(player, BedrockHandshakeNetworking.createServerResponsePacket(infractionType, infractionList));
         if (infractionType != InfractionType.NONE)
         {
@@ -33,7 +37,7 @@ public class BedrockHandshakeVerifier
     public static void onMissingHandshake(ServerPlayerEntity player)
     {
         PendingHandshakeTracker.unmark(player.getUuid());
-        BedrockHandshake.LOGGER.info("Server verifying player " + player.getName().getString() + " : no handshake response, kicked.");
+        BedrockHandshake.LOGGER.info("Bedrock Handshake - Server verifying player " + player.getName().getString() + " : no handshake response, kicked.");
         BedrockHandshakeVerifier.manageInvalidClient(player, "Kicked for not receiving mod list. Contact server administrator.");
     }
 
@@ -42,20 +46,21 @@ public class BedrockHandshakeVerifier
         String disconnectMessage = message;
         if (!player.isDisconnected())
         {
+            BedrockHandshakeHelper.increaseInfractionCount(player);
+            int infractionCount = BedrockHandshakeHelper.getInfractionCount(player);
             MinecraftServer server = player.getServer();
-            if (BedrockHandshakeHelper.getInfractionCount(player) > 2 && server != null)
+            if (infractionCount > BedrockHandshake.TOLERATED_INFRACTION_COUNT && server != null)
             {
                 disconnectMessage = "You have been banned for multiple infractions.";
                 server.getPlayerManager().getUserBanList().add(new BannedPlayerEntry(player.getGameProfile(), null, BedrockHandshake.MOD_ID, null, disconnectMessage));
             }
-            BedrockHandshakeHelper.increaseInfractionCount(player);
             player.networkHandler.disconnect(Text.literal(disconnectMessage));
         }
     }
 
     public static Response verify(PlayerEntity player, List<String> loadedMods, List<String> loadedPacks)
     {
-        if (BedrockHandshake.PLAYERS_WHITELIST.contains(player.getName().getString())) {return new Response("", InfractionType.NONE);}
+        if (BedrockHandshake.PLAYERS_WHITELIST.contains(player.getName().getString())) {return new Response("skipped player verification because he is bedrock_handshake-whitelisted", InfractionType.NONE);}
         else
         {
             InfractionType infractionType = InfractionType.NONE;
@@ -76,6 +81,8 @@ public class BedrockHandshakeVerifier
             }}
             if (list.endsWith(" : ")) {list += "none";}
             else if (list.endsWith(", ")) {list = list.substring(0, list.length() - 2);}
+
+            if (list.equals("invalid mods : none, invalid packs : none")) {list = "no infraction, player can connect";}
 
             return new Response(list, infractionType);
         }

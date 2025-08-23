@@ -45,7 +45,7 @@ public class BedrockHandshakeConfigLoader
         packsWhitelist.add("Default");
         packsWhitelist.add("Par défaut");
         ArrayList<String> playerWhitelist = new ArrayList<>();
-        return new BedrockHandshakeConfig(modsWhitelist, packsWhitelist, playerWhitelist);
+        return new BedrockHandshakeConfig(false, 3, modsWhitelist, packsWhitelist, playerWhitelist);
     }
 
     public static void saveConfig(BedrockHandshakeConfig config)

@@ -24,6 +24,8 @@ public class BedrockHandshake implements ModInitializer, ClientModInitializer
 	
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	public static boolean DO_HANDSHAKE_ON_INTEGRATED_SERVER;
+	public static int TOLERATED_INFRACTION_COUNT;
 	public static List<String> MODS_WHITELIST;
 	public static List<String> PACKS_WHITELIST;
 	public static List<String> PLAYERS_WHITELIST;
@@ -31,6 +33,8 @@ public class BedrockHandshake implements ModInitializer, ClientModInitializer
 	@Override public void onInitialize()
 	{
 		BedrockHandshakeConfig config = BedrockHandshakeConfigLoader.loadConfig();
+		DO_HANDSHAKE_ON_INTEGRATED_SERVER = config.doHandshakeInIntegratedServer();
+		TOLERATED_INFRACTION_COUNT = config.toleratedInfractionCount();
 		MODS_WHITELIST = config.modsWhitelist();
 		PACKS_WHITELIST = config.packsWhitelist();
 		PLAYERS_WHITELIST = config.playersWhitelist();
