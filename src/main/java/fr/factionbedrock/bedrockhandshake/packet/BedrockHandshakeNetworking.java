@@ -2,15 +2,18 @@ package fr.factionbedrock.bedrockhandshake.packet;
 
 import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeVerifier;
 import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeHelper;
+import fr.factionbedrock.bedrockhandshake.util.HashUtils;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class BedrockHandshakeNetworking
 {
-    public static HandshakeData createHandshakePacket(ResourcePackManager resourcePackManager) //C2S
+    public static HandshakeData createHandshakePacket(ResourcePackManager resourcePackManager, String resourcePackDirectoryPath) //C2S
     {
+        HashUtils.listActivePacks(resourcePackManager, resourcePackDirectoryPath);
         return new HandshakeData(BedrockHandshakeHelper.getLoadedModsList(), BedrockHandshakeHelper.getLoadedResourcePacksList(resourcePackManager));
     }
 

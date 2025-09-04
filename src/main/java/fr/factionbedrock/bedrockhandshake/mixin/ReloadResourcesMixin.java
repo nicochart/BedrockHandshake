@@ -19,7 +19,7 @@ public class ReloadResourcesMixin
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.getNetworkHandler() != null && client.player != null)
         {
-            ClientBedrockHandshakeNetworking.sendPacketFromClient(BedrockHandshakeNetworking.createHandshakePacket(client.getResourcePackManager()));
+            ClientBedrockHandshakeNetworking.sendPacketFromClient(BedrockHandshakeNetworking.createHandshakePacket(client.getResourcePackManager(), client.getResourcePackDir().toFile().getAbsolutePath()));
         }
     }
 }

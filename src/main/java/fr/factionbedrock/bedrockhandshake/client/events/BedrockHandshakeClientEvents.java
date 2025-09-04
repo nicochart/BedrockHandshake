@@ -11,7 +11,7 @@ public class BedrockHandshakeClientEvents
     {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) ->
         {
-            ClientBedrockHandshakeNetworking.sendPacketFromClient(BedrockHandshakeNetworking.createHandshakePacket(MinecraftClient.getInstance().getResourcePackManager()));
+            ClientBedrockHandshakeNetworking.sendPacketFromClient(BedrockHandshakeNetworking.createHandshakePacket(MinecraftClient.getInstance().getResourcePackManager(), MinecraftClient.getInstance().getResourcePackDir().toFile().getAbsolutePath()));
         });
     }
 }
