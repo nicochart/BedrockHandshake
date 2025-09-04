@@ -1,7 +1,7 @@
 package fr.factionbedrock.bedrockhandshake.mixin;
 
 import fr.factionbedrock.bedrockhandshake.client.packet.ClientBedrockHandshakeNetworking;
-import fr.factionbedrock.bedrockhandshake.packet.BedrockHandshakeNetworking;
+import fr.factionbedrock.bedrockhandshake.client.util.ClientHelper;
 import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +19,7 @@ public class ReloadResourcesMixin
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.getNetworkHandler() != null && client.player != null)
         {
-            ClientBedrockHandshakeNetworking.sendPacketFromClient(BedrockHandshakeNetworking.createHandshakePacket(client.getResourcePackManager(), client.getResourcePackDir().toFile().getAbsolutePath()));
+            ClientBedrockHandshakeNetworking.sendPacketFromClient(ClientHelper.createHandshakePacket());
         }
     }
 }

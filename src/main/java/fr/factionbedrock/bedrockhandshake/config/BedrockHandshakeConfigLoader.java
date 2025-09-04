@@ -42,8 +42,9 @@ public class BedrockHandshakeConfigLoader
         ArrayList<String> modsWhitelist = new ArrayList<>();
         modsWhitelist.add("bedrock_handshake");
         ArrayList<String> packsWhitelist = new ArrayList<>();
-        packsWhitelist.add("Default");
-        packsWhitelist.add("Par défaut");
+        packsWhitelist.add("vanilla");
+        packsWhitelist.add("high_contrast");
+        packsWhitelist.add("programmer_art");
         ArrayList<String> playerWhitelist = new ArrayList<>();
         return new BedrockHandshakeConfig(false, 3, modsWhitelist, packsWhitelist, playerWhitelist);
     }

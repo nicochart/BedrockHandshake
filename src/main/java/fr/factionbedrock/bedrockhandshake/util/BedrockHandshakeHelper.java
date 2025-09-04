@@ -28,7 +28,7 @@ public class BedrockHandshakeHelper
         return list;
     }
 
-    public static List<String> getLoadedResourcePacksList(ResourcePackManager resourcePackManager)
+    public static List<String> getLoadedResourcePacksNameList(ResourcePackManager resourcePackManager)
     {
         //temporary solution to avoid mod list to appear in loaded packs
         List<String> loadedModIds = getLoadedModsList();
@@ -39,6 +39,21 @@ public class BedrockHandshakeHelper
         for (ResourcePackProfile profile : enabledPacks)
         {
             if (!profile.getId().contains("fabric") && !loadedModIds.contains(profile.getId())) {loadedResourcePacks.add(profile.getDisplayName().getString());}
+        }
+        return loadedResourcePacks;
+    }
+
+    public static List<String> getLoadedResourcePacksIdList(ResourcePackManager resourcePackManager)
+    {
+        //temporary solution to avoid mod list to appear in loaded packs
+        List<String> loadedModIds = getLoadedModsList();
+        List<String> loadedResourcePacks = new ArrayList<>();
+
+        Collection<ResourcePackProfile> enabledPacks = resourcePackManager.getEnabledProfiles();
+        if (enabledPacks.isEmpty()) {return loadedResourcePacks;}
+        for (ResourcePackProfile profile : enabledPacks)
+        {
+            if (!profile.getId().contains("fabric") && !loadedModIds.contains(profile.getId())) {loadedResourcePacks.add(profile.getId());}
         }
         return loadedResourcePacks;
     }

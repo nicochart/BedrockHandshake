@@ -5,7 +5,6 @@ import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeHelper;
 import fr.factionbedrock.bedrockhandshake.util.HashUtils;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -13,8 +12,7 @@ public class BedrockHandshakeNetworking
 {
     public static HandshakeData createHandshakePacket(ResourcePackManager resourcePackManager, String resourcePackDirectoryPath) //C2S
     {
-        HashUtils.listActivePacks(resourcePackManager, resourcePackDirectoryPath);
-        return new HandshakeData(BedrockHandshakeHelper.getLoadedModsList(), BedrockHandshakeHelper.getLoadedResourcePacksList(resourcePackManager));
+        return new HandshakeData(BedrockHandshakeHelper.getLoadedModsList(), HashUtils.getActivePacksHashList(resourcePackManager, resourcePackDirectoryPath));
     }
 
     public static ServerResponseData createServerResponsePacket(BedrockHandshakeVerifier.InfractionType infractionType, String infractionList) //S2C
