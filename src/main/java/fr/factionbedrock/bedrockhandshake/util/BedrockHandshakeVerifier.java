@@ -6,6 +6,7 @@ import fr.factionbedrock.bedrockhandshake.packet.HandshakeData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerConfigEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -19,7 +20,7 @@ public class BedrockHandshakeVerifier
     public static void onHandshake(ServerPlayerEntity player, HandshakeData data)
     {
         if (PendingHandshakeTracker.isStillWaiting(player.getUuid())) {PendingHandshakeTracker.unmark(player.getUuid());}
-        if (!BedrockHandshakeHelper.isDedicated(player.server) && !BedrockHandshake.DO_HANDSHAKE_ON_INTEGRATED_SERVER)
+        if (!BedrockHandshakeHelper.isDedicated(player.getEntityWorld().getServer()) && !BedrockHandshake.DO_HANDSHAKE_ON_INTEGRATED_SERVER)
         {
             BedrockHandshake.LOGGER.info("Bedrock Handshake - skipped player verification because server is not dedicated");
             return;
@@ -49,11 +50,11 @@ public class BedrockHandshakeVerifier
         {
             BedrockHandshakeHelper.increaseInfractionCount(player);
             int infractionCount = BedrockHandshakeHelper.getInfractionCount(player);
-            MinecraftServer server = player.getServer();
+            MinecraftServer server = player.getEntityWorld().getServer();
             if (infractionCount > BedrockHandshake.TOLERATED_INFRACTION_COUNT && server != null)
             {
                 disconnectMessage = "You have been banned for multiple infractions.";
-                server.getPlayerManager().getUserBanList().add(new BannedPlayerEntry(player.getGameProfile(), null, BedrockHandshake.MOD_ID, null, disconnectMessage));
+                server.getPlayerManager().getUserBanList().add(new BannedPlayerEntry(new PlayerConfigEntry(player.getUuid(), player.getStringifiedName()), null, BedrockHandshake.MOD_ID, null, disconnectMessage));
             }
             player.networkHandler.disconnect(Text.literal(disconnectMessage));
         }
