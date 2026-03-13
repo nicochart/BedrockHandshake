@@ -15,27 +15,28 @@ import java.util.List;
 
 public class HashUtils
 {
-    public static List<String> getActivePacksHashList(ResourcePackManager resourcePackManager, String resourcePackDirectoryPath)
+    public static List<ResourcePackInfo> getActivePacksHashList(ResourcePackManager resourcePackManager, String resourcePackDirectoryPath)
     {
         List<String> packIds = BedrockHandshakeHelper.getLoadedResourcePacksIdList(resourcePackManager);
-        List<String> hashList = new ArrayList<>();
+        List<ResourcePackInfo> hashList = new ArrayList<>();
 
         for (String id : packIds)
         {
-            if (id.equals("vanilla") || id.equals("high_contrast") || id.equals("programmer_art")) {hashList.add(id);} //default vanilla packs, can't get hash
+            if (id.equals("vanilla") || id.equals("high_contrast") || id.equals("programmer_art")) {hashList.add(new ResourcePackInfo(id, id));} //default vanilla packs, can't get hash
             else
             {
                 String fileName = id;
                 if (id.startsWith("file/")) {fileName = id.substring("file/".length());}
                 else if (id.contains("/"))
                 {
-                    BedrockHandshake.LOGGER.info("Bedrock Handshake HashUtils error - strange resource pack id : "+id);
+                    BedrockHandshake.LOGGER.info("Bedrock Handshake HashUtils error - strange resource pack fileName : "+id);
                 }
 
                 String pathToResourcePack = resourcePackDirectoryPath + File.separator + fileName;
                 File resourcePackFile = new File(pathToResourcePack);
-                if (Files.isDirectory(resourcePackFile.toPath())) {hashList.add("folder "+fileName);} //can't get a folder hash
-                else {hashList.add(getSHA256(resourcePackFile));}
+                String resource = Files.isDirectory(resourcePackFile.toPath()) ? "folder " + fileName : getSHA256(resourcePackFile);
+                //if is directory : packSignature will be "folder" + folder name, because can't get a folder hash.
+                hashList.add(new ResourcePackInfo(resource, fileName));
             }
         }
         return hashList;

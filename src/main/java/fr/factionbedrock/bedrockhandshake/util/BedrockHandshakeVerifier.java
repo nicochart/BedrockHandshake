@@ -60,14 +60,14 @@ public class BedrockHandshakeVerifier
         }
     }
 
-    public static Response verify(PlayerEntity player, List<String> loadedMods, List<String> loadedPacks)
+    public static Response verify(PlayerEntity player, List<String> loadedMods, List<ResourcePackInfo> loadedPacks)
     {
         if (BedrockHandshake.PLAYERS_WHITELIST.contains(player.getName().getString())) {return new Response("skipped player verification because he is bedrock_handshake-whitelisted", InfractionType.NONE);}
         else
         {
             InfractionType infractionType = InfractionType.NONE;
             String list = "invalid mods : ";
-            for (String mod : loadedMods) { if (!BedrockHandshake.MODS_WHITELIST.contains(mod))
+            for (String mod : loadedMods) {if (!BedrockHandshake.MODS_WHITELIST.contains(mod))
             {
                 infractionType = InfractionType.MOD;
                 list += mod + ", ";
@@ -76,10 +76,10 @@ public class BedrockHandshakeVerifier
             else if (list.endsWith(", ")) {list = list.substring(0, list.length() - 2);}
 
             list += ", invalid packs : ";
-            for (String pack : loadedPacks) { if (!BedrockHandshake.PACKS_WHITELIST.contains(pack))
+            for (ResourcePackInfo packInfo : loadedPacks) {if (!BedrockHandshake.PACKS_WHITELIST.contains(packInfo.packSignature()))
             {
                 infractionType = (infractionType == InfractionType.MOD) ? InfractionType.MOD_AND_PACK : InfractionType.PACK;
-                list += pack + ", ";
+                list += packInfo + ", ";
             }}
             if (list.endsWith(" : ")) {list += "none";}
             else if (list.endsWith(", ")) {list = list.substring(0, list.length() - 2);}
