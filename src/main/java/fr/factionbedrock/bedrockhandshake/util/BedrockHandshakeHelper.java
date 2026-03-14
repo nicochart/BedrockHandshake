@@ -3,12 +3,13 @@ package fr.factionbedrock.bedrockhandshake.util;
 import fr.factionbedrock.bedrockhandshake.registry.BedrockHandshakeTrackedData;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,127 +17,99 @@ import java.util.List;
 
 public class BedrockHandshakeHelper
 {
-    public static List<String> getLoadedModsList()
+    public static List<ModContainer> getLoadedModsList()
     {
-        List<String> list = new ArrayList<>();
+        List<ModContainer> list = new ArrayList<>();
 
         for (ModContainer mod : FabricLoader.getInstance().getAllMods())
         {
             String modId = mod.getMetadata().getId();
-            if (!modId.contains("fabric") && !modId.equals("java") && !modId.equals("minecraft") && !modId.equals("mixinextras")) {list.add(modId);}
+            if (!modId.contains("fabric") && !modId.equals("java") && !modId.equals("minecraft") && !modId.equals("mixinextras")) {list.add(mod);}
         }
         return list;
     }
 
-    public static List<String> getLoadedResourcePacksNameList(ResourcePackManager resourcePackManager)
+    public static List<String> getLoadedModsIds()
+    {
+        List<String> loadedModIds = new ArrayList<>();
+        for (ModContainer mod : getLoadedModsList())
+        {
+            loadedModIds.add(mod.getMetadata().getId());
+        }
+        return loadedModIds;
+    }
+
+    public static List<ResourcePackProfile> getLoadedResourcePacksList(ResourcePackManager resourcePackManager)
     {
         //temporary solution to avoid mod list to appear in loaded packs
-        List<String> loadedModIds = getLoadedModsList();
-        List<String> loadedResourcePacks = new ArrayList<>();
+        List<String> loadedModIds = getLoadedModsIds();
+        List<ResourcePackProfile> loadedResourcePacks = new ArrayList<>();
 
         Collection<ResourcePackProfile> enabledPacks = resourcePackManager.getEnabledProfiles();
         if (enabledPacks.isEmpty()) {return loadedResourcePacks;}
         for (ResourcePackProfile profile : enabledPacks)
         {
-            if (!profile.getId().contains("fabric") && !loadedModIds.contains(profile.getId())) {loadedResourcePacks.add(profile.getDisplayName().getString());}
+            if (!profile.getId().contains("fabric") && !loadedModIds.contains(profile.getId())) {loadedResourcePacks.add(profile);}
         }
         return loadedResourcePacks;
-    }
-
-    public static List<String> getLoadedResourcePacksIdList(ResourcePackManager resourcePackManager)
-    {
-        //temporary solution to avoid mod list to appear in loaded packs
-        List<String> loadedModIds = getLoadedModsList();
-        List<String> loadedResourcePacks = new ArrayList<>();
-
-        Collection<ResourcePackProfile> enabledPacks = resourcePackManager.getEnabledProfiles();
-        if (enabledPacks.isEmpty()) {return loadedResourcePacks;}
-        for (ResourcePackProfile profile : enabledPacks)
-        {
-            if (!profile.getId().contains("fabric") && !loadedModIds.contains(profile.getId())) {loadedResourcePacks.add(profile.getId());}
-        }
-        return loadedResourcePacks;
-    }
-
-    //temporary - needs to be logged instead
-    public static void messageLoadedThingsToPlayer(PlayerEntity player, List<String> modsList, List<String> packsList)
-    {
-        messageLoadedModsFromList(player, modsList);
-        messageLoadedPacksFromList(player, packsList);
-    }
-
-    public static void messageLoadedModsFromList(PlayerEntity player, List<String> list)
-    {
-        messageListToPlayer("mods", player, list);
-    }
-
-    public static void messageLoadedPacksFromList(PlayerEntity player, List<String> list)
-    {
-        messageListToPlayer("packs", player, list);
-    }
-
-    public static void messageListToPlayer(String category, PlayerEntity player, List<String> list)
-    {
-        String stringToSend = "";
-        if (list.isEmpty()) {stringToSend = "0 loaded " + category;}
-        else
-        {
-            int numberOfNotFabricMobs = list.size();
-            for (String modId : list)
-            {
-                stringToSend += "\""+modId+"\", ";
-            }
-            stringToSend = numberOfNotFabricMobs + " loaded " + category + " : " + stringToSend;
-        }
-
-        if (stringToSend.endsWith(", ")) {stringToSend = stringToSend.substring(0, stringToSend.length() - 2);}
-        player.sendMessage(Text.literal(stringToSend), false);
     }
 
     public static void messageLoadedModsToPlayer(PlayerEntity player)
     {
-        int numberOfMods = FabricLoader.getInstance().getAllMods().size();
-        int numberOfNotFabricMobs = 0;
-        String loadedMods = "";
-        for (ModContainer mod : FabricLoader.getInstance().getAllMods())
+        List<ModContainer> loadedMods = getLoadedModsList();
+        int modCount = loadedMods.size();
+
+        String numberOfMods = modCount + " loaded mods" + (modCount != 0 ? " :" : "");
+        player.sendMessage(Text.literal(numberOfMods).styled(style -> style.withBold(true)), false);
+
+        int modNumber = 0;
+
+        for (ModContainer mod : loadedMods)
         {
+            modNumber++;
+
             String modId = mod.getMetadata().getId();
             String name = mod.getMetadata().getName();
             String version = mod.getMetadata().getVersion().getFriendlyString();
 
-            if (!modId.contains("fabric") && !modId.equals("java") && !modId.equals("minecraft") && !modId.equals("mixinextras"))
-            {
-                numberOfNotFabricMobs++;
-                loadedMods += "\""+name+"\" : "+modId+" version "+version+" | ";
-            }
-        }
+            MutableText modInfo = Text.literal("Mod " + modNumber + " : ");
 
-        loadedMods = ((numberOfNotFabricMobs == 0) ? "0 loaded mods" : numberOfNotFabricMobs + " loaded mods : ") + loadedMods;
-        if (loadedMods.endsWith(" | ")) {loadedMods = loadedMods.substring(0, loadedMods.length() - 3);}
-        player.sendMessage(Text.literal(loadedMods), false);
+            Text modIdText = Text.literal(modId).styled(style -> style
+                    .withClickEvent(new ClickEvent.CopyToClipboard(modId))
+                    .withHoverEvent(new HoverEvent.ShowText(Text.literal("Click to copy")))
+                    .withUnderline(true));
+
+            modInfo.append("\"").append(name).append("\" : ").append(modIdText).append(" version ").append(version);
+
+            player.sendMessage(modInfo, false);
+        }
     }
 
     public static void messageLoadedResourcePacksToPlayer(ResourcePackManager resourcePackManager, PlayerEntity player)
     {
-        //temporary solution to avoid mod list to appear in loaded packs
-        List<String> loadedModIds = getLoadedModsList();
 
-        String loadedPacks = "";
-        int numberOfLoadedPacks = 0;
-        Collection<ResourcePackProfile> enabledPacks = resourcePackManager.getEnabledProfiles();
-        if (enabledPacks.isEmpty()) {loadedPacks = "0 loaded packs";}
+        List<ResourcePackProfile> enabledPacks = BedrockHandshakeHelper.getLoadedResourcePacksList(resourcePackManager);
+        int loadedPacksCount = enabledPacks.size();
+
+        String numberOfLoadedPacks = loadedPacksCount + " loaded packs" + (loadedPacksCount != 0 ? " : " : "");
+        player.sendMessage(Text.literal(numberOfLoadedPacks).styled(style -> style.withBold(true)), false);
+
+        int packNumber = 0;
         for (ResourcePackProfile profile : enabledPacks)
         {
-            if (!profile.getId().contains("fabric") && !loadedModIds.contains(profile.getId()))
-            {
-                numberOfLoadedPacks++;
+            packNumber++;
+            MutableText packInfo = Text.literal("Pack "+packNumber+" : ");
+            String packSignature = ResourcePackUtils.getResourcePackInfo(profile.getId(), MinecraftClient.getInstance().getResourcePackDir().toFile().getAbsolutePath()).packSignature();
 
-                loadedPacks += "\""+profile.getDisplayName().getString()+"\" : " + profile.getDescription().getString() + " | ";
-            }
+            Text hashText = Text.literal(packSignature).styled(style -> style
+                                .withClickEvent(new ClickEvent.CopyToClipboard(packSignature))
+                                .withHoverEvent(new HoverEvent.ShowText(Text.literal("Click to copy")))
+                                .withUnderline(true));
+
+            packInfo.append("\"").append(profile.getDisplayName()).append("\" : ").append(profile.getDescription()).append(", ").append(hashText);
+
+            player.sendMessage(packInfo, false);
         }
-        loadedPacks = ((numberOfLoadedPacks == 0) ? "0 loaded packs" : numberOfLoadedPacks + " loaded packs : ") + loadedPacks;
-        if (loadedPacks.endsWith(" | ")) {loadedPacks = loadedPacks.substring(0, loadedPacks.length() - 3);}
-        player.sendMessage(Text.literal(loadedPacks), false);
     }
 
     public static int getInfractionCount(PlayerEntity player)
