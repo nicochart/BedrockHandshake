@@ -1,8 +1,8 @@
-package fr.factionbedrock.bedrockhandshake.client.packet;
+package fr.factionbedrock.bedrockhandshake.client.network;
 
 import fr.factionbedrock.bedrockhandshake.BedrockHandshake;
-import fr.factionbedrock.bedrockhandshake.packet.ServerResponseData;
-import fr.factionbedrock.bedrockhandshake.packet.HandshakeData;
+import fr.factionbedrock.bedrockhandshake.network.payload.ServerResponseData;
+import fr.factionbedrock.bedrockhandshake.network.payload.HandshakeData;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 public class ClientBedrockHandshakeNetworking

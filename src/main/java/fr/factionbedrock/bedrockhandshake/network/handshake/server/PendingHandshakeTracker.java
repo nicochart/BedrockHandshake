@@ -1,4 +1,4 @@
-package fr.factionbedrock.bedrockhandshake.util;
+package fr.factionbedrock.bedrockhandshake.network.handshake.server;
 
 import java.util.Set;
 import java.util.UUID;

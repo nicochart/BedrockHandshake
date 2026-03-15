@@ -1,7 +1,6 @@
 package fr.factionbedrock.bedrockhandshake.util;
 
 import fr.factionbedrock.bedrockhandshake.registry.BedrockHandshakeTrackedData;
-import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,52 +10,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.text.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class BedrockHandshakeHelper
 {
-    public static List<ModContainer> getLoadedModsList()
-    {
-        List<ModContainer> list = new ArrayList<>();
-
-        for (ModContainer mod : FabricLoader.getInstance().getAllMods())
-        {
-            String modId = mod.getMetadata().getId();
-            if (!modId.contains("fabric") && !modId.equals("java") && !modId.equals("minecraft") && !modId.equals("mixinextras")) {list.add(mod);}
-        }
-        return list;
-    }
-
-    public static List<String> getLoadedModsIds()
-    {
-        List<String> loadedModIds = new ArrayList<>();
-        for (ModContainer mod : getLoadedModsList())
-        {
-            loadedModIds.add(mod.getMetadata().getId());
-        }
-        return loadedModIds;
-    }
-
-    public static List<ResourcePackProfile> getLoadedResourcePacksList(ResourcePackManager resourcePackManager)
-    {
-        //temporary solution to avoid mod list to appear in loaded packs
-        List<String> loadedModIds = getLoadedModsIds();
-        List<ResourcePackProfile> loadedResourcePacks = new ArrayList<>();
-
-        Collection<ResourcePackProfile> enabledPacks = resourcePackManager.getEnabledProfiles();
-        if (enabledPacks.isEmpty()) {return loadedResourcePacks;}
-        for (ResourcePackProfile profile : enabledPacks)
-        {
-            if (!profile.getId().contains("fabric") && !loadedModIds.contains(profile.getId())) {loadedResourcePacks.add(profile);}
-        }
-        return loadedResourcePacks;
-    }
-
     public static void messageLoadedModsToPlayer(PlayerEntity player)
     {
-        List<ModContainer> loadedMods = getLoadedModsList();
+        List<ModContainer> loadedMods = ModUtils.getLoadedModsList();
         int modCount = loadedMods.size();
 
         String numberOfMods = modCount + " loaded mods" + (modCount != 0 ? " :" : "");
@@ -87,8 +47,7 @@ public class BedrockHandshakeHelper
 
     public static void messageLoadedResourcePacksToPlayer(ResourcePackManager resourcePackManager, PlayerEntity player)
     {
-
-        List<ResourcePackProfile> enabledPacks = BedrockHandshakeHelper.getLoadedResourcePacksList(resourcePackManager);
+        List<ResourcePackProfile> enabledPacks = ResourcePackUtils.getLoadedResourcePacksList(resourcePackManager);
         int loadedPacksCount = enabledPacks.size();
 
         String numberOfLoadedPacks = loadedPacksCount + " loaded packs" + (loadedPacksCount != 0 ? " : " : "");
@@ -98,15 +57,19 @@ public class BedrockHandshakeHelper
         for (ResourcePackProfile profile : enabledPacks)
         {
             packNumber++;
+
+            String displayName = profile.getDisplayName().getString();
+            String description = profile.getDescription().getString();
+            String packSignature = ResourcePackUtils.getResourcePackInfo(profile, MinecraftClient.getInstance().getResourcePackDir().toFile().getAbsolutePath()).packSignature();
+
             MutableText packInfo = Text.literal("Pack "+packNumber+" : ");
-            String packSignature = ResourcePackUtils.getResourcePackInfo(profile.getId(), MinecraftClient.getInstance().getResourcePackDir().toFile().getAbsolutePath()).packSignature();
 
             Text hashText = Text.literal(packSignature).styled(style -> style
                                 .withClickEvent(new ClickEvent.CopyToClipboard(packSignature))
                                 .withHoverEvent(new HoverEvent.ShowText(Text.literal("Click to copy")))
                                 .withUnderline(true));
 
-            packInfo.append("\"").append(profile.getDisplayName()).append("\" : ").append(profile.getDescription()).append(", ").append(hashText);
+            packInfo.append("\"").append(displayName).append("\" : ").append(description).append(", ").append(hashText);
 
             player.sendMessage(packInfo, false);
         }

@@ -1,4 +1,4 @@
-package fr.factionbedrock.bedrockhandshake.util;
+package fr.factionbedrock.bedrockhandshake.network.handshake.server;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;

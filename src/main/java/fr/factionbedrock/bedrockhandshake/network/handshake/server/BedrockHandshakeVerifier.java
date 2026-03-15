@@ -1,8 +1,11 @@
-package fr.factionbedrock.bedrockhandshake.util;
+package fr.factionbedrock.bedrockhandshake.network.handshake.server;
 
 import fr.factionbedrock.bedrockhandshake.BedrockHandshake;
-import fr.factionbedrock.bedrockhandshake.packet.BedrockHandshakeNetworking;
-import fr.factionbedrock.bedrockhandshake.packet.HandshakeData;
+import fr.factionbedrock.bedrockhandshake.network.BedrockHandshakeNetworking;
+import fr.factionbedrock.bedrockhandshake.network.handshake.ModInfo;
+import fr.factionbedrock.bedrockhandshake.network.handshake.ResourcePackInfo;
+import fr.factionbedrock.bedrockhandshake.network.payload.HandshakeData;
+import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.MinecraftServer;
@@ -60,14 +63,14 @@ public class BedrockHandshakeVerifier
         }
     }
 
-    public static Response verify(PlayerEntity player, List<String> loadedMods, List<ResourcePackInfo> loadedPacks)
+    public static Response verify(PlayerEntity player, List<ModInfo> loadedMods, List<ResourcePackInfo> loadedPacks)
     {
         if (BedrockHandshake.PLAYERS_WHITELIST.contains(player.getName().getString())) {return new Response("skipped player verification because he is bedrock_handshake-whitelisted", InfractionType.NONE);}
         else
         {
             InfractionType infractionType = InfractionType.NONE;
             String list = "invalid mods : ";
-            for (String mod : loadedMods) {if (!BedrockHandshake.MODS_WHITELIST.contains(mod))
+            for (ModInfo mod : loadedMods) {if (!BedrockHandshake.MODS_WHITELIST.contains(mod.modId()))
             {
                 infractionType = InfractionType.MOD;
                 list += mod + ", ";

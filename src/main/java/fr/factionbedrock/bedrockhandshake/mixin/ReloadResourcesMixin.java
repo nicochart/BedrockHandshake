@@ -1,6 +1,6 @@
 package fr.factionbedrock.bedrockhandshake.mixin;
 
-import fr.factionbedrock.bedrockhandshake.client.packet.ClientBedrockHandshakeNetworking;
+import fr.factionbedrock.bedrockhandshake.client.network.ClientBedrockHandshakeNetworking;
 import fr.factionbedrock.bedrockhandshake.client.util.ClientHelper;
 import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;

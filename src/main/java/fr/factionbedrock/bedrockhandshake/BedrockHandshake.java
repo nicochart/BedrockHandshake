@@ -1,12 +1,12 @@
 package fr.factionbedrock.bedrockhandshake;
 
 import fr.factionbedrock.bedrockhandshake.client.events.BedrockHandshakeClientEvents;
-import fr.factionbedrock.bedrockhandshake.client.packet.ClientBedrockHandshakeNetworking;
+import fr.factionbedrock.bedrockhandshake.client.network.ClientBedrockHandshakeNetworking;
 import fr.factionbedrock.bedrockhandshake.config.BedrockHandshakeConfig;
 import fr.factionbedrock.bedrockhandshake.config.BedrockHandshakeConfigLoader;
 import fr.factionbedrock.bedrockhandshake.events.BedrockHandshakePlayerEvents;
 import fr.factionbedrock.bedrockhandshake.events.BedrockHandshakeServerEvents;
-import fr.factionbedrock.bedrockhandshake.packet.BedrockHandshakeNetworking;
+import fr.factionbedrock.bedrockhandshake.network.BedrockHandshakeNetworking;
 import fr.factionbedrock.bedrockhandshake.registry.BedrockHandshaketems;
 import fr.factionbedrock.bedrockhandshake.registry.BedrockHandshakeTrackedData;
 import net.fabricmc.api.ClientModInitializer;

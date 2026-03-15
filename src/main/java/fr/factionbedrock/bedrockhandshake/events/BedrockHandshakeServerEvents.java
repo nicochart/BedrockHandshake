@@ -1,6 +1,6 @@
 package fr.factionbedrock.bedrockhandshake.events;
 
-import fr.factionbedrock.bedrockhandshake.util.HandshakeTimeoutScheduler;
+import fr.factionbedrock.bedrockhandshake.network.handshake.server.HandshakeTimeoutScheduler;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
 public class BedrockHandshakeServerEvents

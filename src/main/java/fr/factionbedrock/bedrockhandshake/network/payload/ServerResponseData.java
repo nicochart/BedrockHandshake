@@ -1,4 +1,4 @@
-package fr.factionbedrock.bedrockhandshake.packet;
+package fr.factionbedrock.bedrockhandshake.network.payload;
 
 import fr.factionbedrock.bedrockhandshake.BedrockHandshake;
 import net.minecraft.network.RegistryByteBuf;

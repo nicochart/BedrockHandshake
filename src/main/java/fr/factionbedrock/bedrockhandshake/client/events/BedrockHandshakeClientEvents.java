@@ -1,6 +1,6 @@
 package fr.factionbedrock.bedrockhandshake.client.events;
 
-import fr.factionbedrock.bedrockhandshake.client.packet.ClientBedrockHandshakeNetworking;
+import fr.factionbedrock.bedrockhandshake.client.network.ClientBedrockHandshakeNetworking;
 import fr.factionbedrock.bedrockhandshake.client.util.ClientHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 

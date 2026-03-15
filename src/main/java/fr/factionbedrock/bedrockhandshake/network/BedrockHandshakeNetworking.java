@@ -1,7 +1,9 @@
-package fr.factionbedrock.bedrockhandshake.packet;
+package fr.factionbedrock.bedrockhandshake.network;
 
-import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeVerifier;
-import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeHelper;
+import fr.factionbedrock.bedrockhandshake.network.payload.HandshakeData;
+import fr.factionbedrock.bedrockhandshake.network.payload.ServerResponseData;
+import fr.factionbedrock.bedrockhandshake.network.handshake.server.BedrockHandshakeVerifier;
+import fr.factionbedrock.bedrockhandshake.util.ModUtils;
 import fr.factionbedrock.bedrockhandshake.util.ResourcePackUtils;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -12,7 +14,7 @@ public class BedrockHandshakeNetworking
 {
     public static HandshakeData createHandshakePacket(ResourcePackManager resourcePackManager, String resourcePackDirectoryPath) //C2S
     {
-        return new HandshakeData(BedrockHandshakeHelper.getLoadedModsIds(), ResourcePackUtils.getActivePacksInfo(resourcePackManager, resourcePackDirectoryPath));
+        return new HandshakeData(ModUtils.getLoadedMods(), ResourcePackUtils.getActivePacksInfo(resourcePackManager, resourcePackDirectoryPath));
     }
 
     public static ServerResponseData createServerResponsePacket(BedrockHandshakeVerifier.InfractionType infractionType, String infractionList) //S2C
