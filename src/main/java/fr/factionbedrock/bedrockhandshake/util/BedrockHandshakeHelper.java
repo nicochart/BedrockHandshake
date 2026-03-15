@@ -1,38 +1,43 @@
 package fr.factionbedrock.bedrockhandshake.util;
 
+import fr.factionbedrock.bedrockhandshake.network.handshake.ModInfo;
+import fr.factionbedrock.bedrockhandshake.network.handshake.ResourcePackInfo;
 import fr.factionbedrock.bedrockhandshake.registry.BedrockHandshakeTrackedData;
-import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.text.*;
+import net.minecraft.util.Formatting;
 
 import java.util.List;
 
 public class BedrockHandshakeHelper
 {
-    public static void messageLoadedModsToPlayer(PlayerEntity player)
+    public static void messageListsToPlayer(PlayerEntity player, List<ModInfo> modList, List<String> allowedModIds, List<ResourcePackInfo> packList, List<String> allowedPacksSignatures)
     {
-        List<ModContainer> loadedMods = ModUtils.getLoadedModsList();
-        int modCount = loadedMods.size();
+        messageModListToPlayer(player, modList, allowedModIds);
+        messageResourcePackListToPlayer(player, packList, allowedPacksSignatures);
+    }
+
+    public static void messageModListToPlayer(PlayerEntity player, List<ModInfo> modList, List<String> allowedModIds)
+    {
+        int modCount = modList.size();
 
         String numberOfMods = modCount + " loaded mods" + (modCount != 0 ? " :" : "");
         player.sendMessage(Text.literal(numberOfMods).styled(style -> style.withBold(true)), false);
 
         int modNumber = 0;
 
-        for (ModContainer mod : loadedMods)
+        for (ModInfo mod : modList)
         {
             modNumber++;
 
-            String modId = mod.getMetadata().getId();
-            String name = mod.getMetadata().getName();
-            String version = mod.getMetadata().getVersion().getFriendlyString();
+            String modId = mod.modId();
+            String name = mod.name();
+            String version = mod.version();
 
-            MutableText modInfo = Text.literal("Mod " + modNumber + " : ");
+            Formatting color = allowedModIds.contains(modId) ? Formatting.WHITE : Formatting.RED;
+            MutableText modInfo = Text.literal("Mod " + modNumber + " : ").styled(style -> style.withColor(color));
 
             Text modIdText = Text.literal(modId).styled(style -> style
                     .withClickEvent(new ClickEvent.CopyToClipboard(modId))
@@ -45,24 +50,24 @@ public class BedrockHandshakeHelper
         }
     }
 
-    public static void messageLoadedResourcePacksToPlayer(ResourcePackManager resourcePackManager, PlayerEntity player)
+    public static void messageResourcePackListToPlayer(PlayerEntity player, List<ResourcePackInfo> packList, List<String> allowedPacksSignatures)
     {
-        List<ResourcePackProfile> enabledPacks = ResourcePackUtils.getLoadedResourcePacksList(resourcePackManager);
-        int loadedPacksCount = enabledPacks.size();
+        int loadedPacksCount = packList.size();
 
         String numberOfLoadedPacks = loadedPacksCount + " loaded packs" + (loadedPacksCount != 0 ? " : " : "");
         player.sendMessage(Text.literal(numberOfLoadedPacks).styled(style -> style.withBold(true)), false);
 
         int packNumber = 0;
-        for (ResourcePackProfile profile : enabledPacks)
+        for (ResourcePackInfo profile : packList)
         {
             packNumber++;
 
-            String displayName = profile.getDisplayName().getString();
-            String description = profile.getDescription().getString();
-            String packSignature = ResourcePackUtils.getResourcePackInfo(profile, MinecraftClient.getInstance().getResourcePackDir().toFile().getAbsolutePath()).packSignature();
+            String displayName = profile.fileName();
+            String description = profile.description();
+            String packSignature = profile.packSignature();
 
-            MutableText packInfo = Text.literal("Pack "+packNumber+" : ");
+            Formatting color = allowedPacksSignatures.contains(packSignature) ? Formatting.WHITE : Formatting.RED;
+            MutableText packInfo = Text.literal("Pack "+packNumber+" : ").styled(style -> style.withColor(color));
 
             Text hashText = Text.literal(packSignature).styled(style -> style
                                 .withClickEvent(new ClickEvent.CopyToClipboard(packSignature))

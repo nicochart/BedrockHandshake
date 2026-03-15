@@ -23,6 +23,12 @@ public class BedrockHandshakeVerifier
     public static void onHandshake(ServerPlayerEntity player, HandshakeData data)
     {
         if (PendingHandshakeTracker.isStillWaiting(player.getUuid())) {PendingHandshakeTracker.unmark(player.getUuid());}
+
+        if (BedrockHandshake.PLAYERS_WHITELIST.contains(player.getName().getString()))
+        {
+        BedrockHandshakeHelper.messageListsToPlayer(player, data.mods(), BedrockHandshake.MODS_WHITELIST, data.packs(), BedrockHandshake.PACKS_WHITELIST);
+        }
+
         if (!BedrockHandshakeHelper.isDedicated(player.getEntityWorld().getServer()) && !BedrockHandshake.DO_HANDSHAKE_ON_INTEGRATED_SERVER)
         {
             BedrockHandshake.LOGGER.info("Bedrock Handshake - skipped player verification because server is not dedicated");

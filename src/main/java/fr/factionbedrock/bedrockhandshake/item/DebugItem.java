@@ -1,7 +1,7 @@
 package fr.factionbedrock.bedrockhandshake.item;
 
-import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeHelper;
-import net.minecraft.client.MinecraftClient;
+import fr.factionbedrock.bedrockhandshake.client.network.ClientBedrockHandshakeNetworking;
+import fr.factionbedrock.bedrockhandshake.client.util.ClientHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.util.ActionResult;
@@ -16,8 +16,7 @@ public class DebugItem extends Item
     {
         if (world.isClient())
         {
-            BedrockHandshakeHelper.messageLoadedModsToPlayer(user);
-            BedrockHandshakeHelper.messageLoadedResourcePacksToPlayer(MinecraftClient.getInstance().getResourcePackManager(), user);
+            ClientBedrockHandshakeNetworking.sendPacketFromClient(ClientHelper.createHandshakePacket());
         }
 
         return ActionResult.SUCCESS;
