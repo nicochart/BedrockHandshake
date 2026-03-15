@@ -24,9 +24,9 @@ public class BedrockHandshakeVerifier
     {
         if (PendingHandshakeTracker.isStillWaiting(player.getUuid())) {PendingHandshakeTracker.unmark(player.getUuid());}
 
-        if (BedrockHandshake.PLAYERS_WHITELIST.contains(player.getName().getString()))
+        if (data.fromAdminTool())
         {
-        BedrockHandshakeHelper.messageListsToPlayer(player, data.mods(), BedrockHandshake.MODS_WHITELIST, data.packs(), BedrockHandshake.PACKS_WHITELIST);
+            BedrockHandshakeHelper.messageListsToPlayer(player, data.mods(), BedrockHandshake.MODS_WHITELIST, data.packs(), BedrockHandshake.PACKS_WHITELIST);
         }
 
         if (!BedrockHandshakeHelper.isDedicated(player.getEntityWorld().getServer()) && !BedrockHandshake.DO_HANDSHAKE_ON_INTEGRATED_SERVER)

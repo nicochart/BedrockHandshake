@@ -11,11 +11,12 @@ import net.minecraft.network.packet.CustomPayload;
 import java.util.ArrayList;
 import java.util.List;
 
-public record HandshakeData(List<ModInfo> mods, List<ResourcePackInfo> packs) implements CustomPayload
+public record HandshakeData(boolean fromAdminTool, List<ModInfo> mods, List<ResourcePackInfo> packs) implements CustomPayload
 {
     public static final Id<HandshakeData> ID = new Id<>(BedrockHandshake.id("handshake_data"));
 
     public static final PacketCodec<RegistryByteBuf, HandshakeData> CODEC = PacketCodec.tuple(
+            PacketCodecs.BOOLEAN, HandshakeData::fromAdminTool,
             PacketCodecs.collection(ArrayList::new, ModInfo.CODEC), HandshakeData::mods,
             PacketCodecs.collection(ArrayList::new, ResourcePackInfo.CODEC), HandshakeData::packs,
             HandshakeData::new);

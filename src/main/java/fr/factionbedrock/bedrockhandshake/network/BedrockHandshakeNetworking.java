@@ -14,7 +14,12 @@ public class BedrockHandshakeNetworking
 {
     public static HandshakeData createHandshakePacket(ResourcePackManager resourcePackManager, String resourcePackDirectoryPath) //C2S
     {
-        return new HandshakeData(ModUtils.getLoadedMods(), ResourcePackUtils.getActivePacksInfo(resourcePackManager, resourcePackDirectoryPath));
+        return createHandshakePacket(false, resourcePackManager, resourcePackDirectoryPath);
+    }
+
+    public static HandshakeData createHandshakePacket(boolean fromAdminTool, ResourcePackManager resourcePackManager, String resourcePackDirectoryPath) //C2S
+    {
+        return new HandshakeData(fromAdminTool, ModUtils.getLoadedMods(), ResourcePackUtils.getActivePacksInfo(resourcePackManager, resourcePackDirectoryPath));
     }
 
     public static ServerResponseData createServerResponsePacket(BedrockHandshakeVerifier.InfractionType infractionType, String infractionList) //S2C

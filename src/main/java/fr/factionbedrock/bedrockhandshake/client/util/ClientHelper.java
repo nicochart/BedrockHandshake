@@ -10,4 +10,9 @@ public class ClientHelper
     {
         return BedrockHandshakeNetworking.createHandshakePacket(MinecraftClient.getInstance().getResourcePackManager(), MinecraftClient.getInstance().getResourcePackDir().toFile().getAbsolutePath());
     }
+
+    public static HandshakeData createAdminHandshakePacket()
+    {
+        return BedrockHandshakeNetworking.createHandshakePacket(true, MinecraftClient.getInstance().getResourcePackManager(), MinecraftClient.getInstance().getResourcePackDir().toFile().getAbsolutePath());
+    }
 }

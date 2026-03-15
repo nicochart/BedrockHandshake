@@ -16,7 +16,7 @@ public class DebugItem extends Item
     {
         if (world.isClient())
         {
-            ClientBedrockHandshakeNetworking.sendPacketFromClient(ClientHelper.createHandshakePacket());
+            ClientBedrockHandshakeNetworking.sendPacketFromClient(ClientHelper.createAdminHandshakePacket());
         }
 
         return ActionResult.SUCCESS;
