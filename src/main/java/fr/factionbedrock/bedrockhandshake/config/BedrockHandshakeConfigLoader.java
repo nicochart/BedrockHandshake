@@ -12,6 +12,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 
 public class BedrockHandshakeConfigLoader
 {
@@ -47,6 +48,38 @@ public class BedrockHandshakeConfigLoader
         packsWhitelist.add("programmer_art");
         ArrayList<String> playerWhitelist = new ArrayList<>();
         return new BedrockHandshakeConfig(false, 3, modsWhitelist, packsWhitelist, playerWhitelist);
+    }
+
+    public static void updateDoHandshakeOnIntegratedServer(boolean doHandshakeOnIntegratedServer)
+    {
+        updateConfig(doHandshakeOnIntegratedServer, BedrockHandshake.TOLERATED_INFRACTION_COUNT, BedrockHandshake.MODS_WHITELIST, BedrockHandshake.PACKS_WHITELIST, BedrockHandshake.PLAYERS_WHITELIST);
+    }
+
+    public static void updateToleratedInfractionCount(int toleratedInfractionCount)
+    {
+        updateConfig(BedrockHandshake.DO_HANDSHAKE_ON_INTEGRATED_SERVER, toleratedInfractionCount, BedrockHandshake.MODS_WHITELIST, BedrockHandshake.PACKS_WHITELIST, BedrockHandshake.PLAYERS_WHITELIST);
+    }
+
+    public static void updateModsWhitelist(List<String> modsWhitelist)
+    {
+        updateConfig(BedrockHandshake.DO_HANDSHAKE_ON_INTEGRATED_SERVER, BedrockHandshake.TOLERATED_INFRACTION_COUNT, modsWhitelist, BedrockHandshake.PACKS_WHITELIST, BedrockHandshake.PLAYERS_WHITELIST);
+    }
+
+    public static void updatePacksWhitelist(List<String> packsWhitelist)
+    {
+        updateConfig(BedrockHandshake.DO_HANDSHAKE_ON_INTEGRATED_SERVER, BedrockHandshake.TOLERATED_INFRACTION_COUNT, BedrockHandshake.MODS_WHITELIST, packsWhitelist, BedrockHandshake.PLAYERS_WHITELIST);
+    }
+
+    public static void updatePlayersWhitelist(List<String> playersWhitelist)
+    {
+        updateConfig(BedrockHandshake.DO_HANDSHAKE_ON_INTEGRATED_SERVER, BedrockHandshake.TOLERATED_INFRACTION_COUNT, BedrockHandshake.MODS_WHITELIST, BedrockHandshake.PACKS_WHITELIST, playersWhitelist);
+    }
+
+    public static void updateConfig(boolean doHandshakeOnIntegratedServer, int toleratedInfractionCount, List<String> modsWhitelist, List<String> packsWhitelist, List<String> playersWhitelist)
+    {
+        BedrockHandshakeConfig config = new BedrockHandshakeConfig(doHandshakeOnIntegratedServer, toleratedInfractionCount, modsWhitelist, packsWhitelist, playersWhitelist);
+        saveConfig(config);
+        BedrockHandshake.initializeConfig();
     }
 
     public static void saveConfig(BedrockHandshakeConfig config)

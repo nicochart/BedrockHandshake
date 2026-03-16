@@ -2,6 +2,7 @@ package fr.factionbedrock.bedrockhandshake;
 
 import fr.factionbedrock.bedrockhandshake.client.events.BedrockHandshakeClientEvents;
 import fr.factionbedrock.bedrockhandshake.client.network.ClientBedrockHandshakeNetworking;
+import fr.factionbedrock.bedrockhandshake.commands.BedrockHandshakeCommands;
 import fr.factionbedrock.bedrockhandshake.config.BedrockHandshakeConfig;
 import fr.factionbedrock.bedrockhandshake.config.BedrockHandshakeConfigLoader;
 import fr.factionbedrock.bedrockhandshake.events.BedrockHandshakePlayerEvents;
@@ -32,12 +33,7 @@ public class BedrockHandshake implements ModInitializer, ClientModInitializer
 
 	@Override public void onInitialize()
 	{
-		BedrockHandshakeConfig config = BedrockHandshakeConfigLoader.loadConfig();
-		DO_HANDSHAKE_ON_INTEGRATED_SERVER = config.doHandshakeInIntegratedServer();
-		TOLERATED_INFRACTION_COUNT = config.toleratedInfractionCount();
-		MODS_WHITELIST = config.modsWhitelist();
-		PACKS_WHITELIST = config.packsWhitelist();
-		PLAYERS_WHITELIST = config.playersWhitelist();
+		initializeConfig();
 
 		BedrockHandshaketems.load();
 		BedrockHandshakeTrackedData.load();
@@ -45,6 +41,17 @@ public class BedrockHandshake implements ModInitializer, ClientModInitializer
 		BedrockHandshakeNetworking.registerServerReceiver();
 		BedrockHandshakePlayerEvents.registerPlayerEvents();
 		BedrockHandshakeServerEvents.registerServerEvents();
+		BedrockHandshakeCommands.register();
+	}
+
+	public static void initializeConfig()
+	{
+		BedrockHandshakeConfig config = BedrockHandshakeConfigLoader.loadConfig();
+		DO_HANDSHAKE_ON_INTEGRATED_SERVER = config.doHandshakeInIntegratedServer();
+		TOLERATED_INFRACTION_COUNT = config.toleratedInfractionCount();
+		MODS_WHITELIST = config.modsWhitelist();
+		PACKS_WHITELIST = config.packsWhitelist();
+		PLAYERS_WHITELIST = config.playersWhitelist();
 	}
 
 	@Override public void onInitializeClient()
