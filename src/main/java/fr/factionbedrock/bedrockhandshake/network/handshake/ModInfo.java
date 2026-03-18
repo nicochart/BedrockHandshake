@@ -1,10 +1,9 @@
 package fr.factionbedrock.bedrockhandshake.network.handshake;
 
+import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeHelper;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -23,11 +22,7 @@ public record ModInfo(String modId, String name, String version)
     public MutableText toText(Formatting formatting, Text customPrefix)
     {
         MutableText modInfo = Text.literal(customPrefix.getString()).styled(style -> style.withColor(formatting));
-
-        Text modIdText = Text.literal(modId).styled(style -> style
-                .withClickEvent(new ClickEvent.CopyToClipboard(modId))
-                .withHoverEvent(new HoverEvent.ShowText(Text.literal("Click to copy")))
-                .withUnderline(true));
+        Text modIdText = BedrockHandshakeHelper.textCopyable(modId);
 
         return modInfo.append("\"").append(name).append("\" : ").append(modIdText).append(" version ").append(version);
     }

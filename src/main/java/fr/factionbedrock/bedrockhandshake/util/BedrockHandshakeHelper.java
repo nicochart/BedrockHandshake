@@ -65,4 +65,12 @@ public class BedrockHandshakeHelper
     {
         return server instanceof DedicatedServer;
     }
+
+    public static Text textCopyable(String text)
+    {
+        return Text.literal(text).styled(style -> style
+                .withUnderline(true)
+                .withClickEvent(new ClickEvent.CopyToClipboard(text))
+                .withHoverEvent(new HoverEvent.ShowText(Text.literal("Click to copy"))));
+    }
 }

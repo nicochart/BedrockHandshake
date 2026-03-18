@@ -1,10 +1,9 @@
 package fr.factionbedrock.bedrockhandshake.network.handshake;
 
+import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeHelper;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -23,11 +22,7 @@ public record ResourcePackInfo(String packSignature, String fileName, String des
     public MutableText toText(Formatting formatting, Text customPrefix)
     {
         MutableText packInfo = Text.literal(customPrefix.getString()).styled(style -> style.withColor(formatting));
-
-        Text hashText = Text.literal(packSignature).styled(style -> style
-                .withClickEvent(new ClickEvent.CopyToClipboard(packSignature))
-                .withHoverEvent(new HoverEvent.ShowText(Text.literal("Click to copy")))
-                .withUnderline(true));
+        Text hashText = BedrockHandshakeHelper.textCopyable(packSignature);
 
         return packInfo.append("\"").append(fileName).append("\" : ").append(description).append(", ").append(hashText);
     }
