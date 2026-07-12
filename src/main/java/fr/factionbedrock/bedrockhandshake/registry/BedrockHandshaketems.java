@@ -10,7 +10,7 @@ import net.minecraft.world.item.Item;
 
 public class BedrockHandshaketems
 {
-    public static final Item DEBUG_ITEM = register(Keys.DEBUG_ITEM.location().getPath(), new DebugItem(new Item.Properties().stacksTo(1).setId(Keys.DEBUG_ITEM)));
+    public static final Item DEBUG_ITEM = register(Keys.DEBUG_ITEM.location().getPath(), new DebugItem(new Item.Properties().stacksTo(1)));
 
     public static class Keys
     {

@@ -69,9 +69,10 @@ public class BedrockHandshakeHelper
 
     public static Component textCopyable(String text)
     {
+        //inspired of ComponentUtils "copyOnClickText" method
         return Component.literal(text).withStyle(style -> style
                 .withUnderlined(true)
-                .withClickEvent(new ClickEvent.CopyToClipboard(text))
-                .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to copy"))));
+                .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, text))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))));
     }
 }

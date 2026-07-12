@@ -1,5 +1,6 @@
 package fr.factionbedrock.bedrockhandshake.network.handshake.server;
 
+import com.mojang.authlib.GameProfile;
 import fr.factionbedrock.bedrockhandshake.BedrockHandshake;
 import fr.factionbedrock.bedrockhandshake.network.BedrockHandshakeNetworking;
 import fr.factionbedrock.bedrockhandshake.network.handshake.ModInfo;
@@ -9,7 +10,6 @@ import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.NameAndId;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.world.entity.player.Player;
 import java.util.List;
@@ -62,7 +62,7 @@ public class BedrockHandshakeVerifier
             if (infractionCount > BedrockHandshake.TOLERATED_INFRACTION_COUNT && server != null)
             {
                 disconnectMessage = "You have been banned for multiple infractions.";
-                server.getPlayerList().getBans().add(new UserBanListEntry(new NameAndId(player.getUUID(), player.getPlainTextName()), null, BedrockHandshake.MOD_ID, null, disconnectMessage));
+                server.getPlayerList().getBans().add(new UserBanListEntry(new GameProfile(player.getUUID(), player.getName().getString()), null, BedrockHandshake.MOD_ID, null, disconnectMessage));
             }
             player.connection.disconnect(Component.literal(disconnectMessage));
         }
