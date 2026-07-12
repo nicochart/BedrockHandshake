@@ -7,17 +7,17 @@ import fr.factionbedrock.bedrockhandshake.util.ModUtils;
 import fr.factionbedrock.bedrockhandshake.util.ResourcePackUtils;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.repository.PackRepository;
 
 public class BedrockHandshakeNetworking
 {
-    public static HandshakeData createHandshakePacket(ResourcePackManager resourcePackManager, String resourcePackDirectoryPath) //C2S
+    public static HandshakeData createHandshakePacket(PackRepository resourcePackManager, String resourcePackDirectoryPath) //C2S
     {
         return createHandshakePacket(false, resourcePackManager, resourcePackDirectoryPath);
     }
 
-    public static HandshakeData createHandshakePacket(boolean fromAdminTool, ResourcePackManager resourcePackManager, String resourcePackDirectoryPath) //C2S
+    public static HandshakeData createHandshakePacket(boolean fromAdminTool, PackRepository resourcePackManager, String resourcePackDirectoryPath) //C2S
     {
         return new HandshakeData(fromAdminTool, ModUtils.getLoadedMods(), ResourcePackUtils.getActivePacksInfo(resourcePackManager, resourcePackDirectoryPath));
     }
@@ -40,7 +40,7 @@ public class BedrockHandshakeNetworking
         PayloadTypeRegistry.playS2C().register(ServerResponseData.ID, ServerResponseData.CODEC);
     }
 
-    public static void sendPacketFromServer(ServerPlayerEntity serverPlayer, ServerResponseData payload)
+    public static void sendPacketFromServer(ServerPlayer serverPlayer, ServerResponseData payload)
     {
         ServerPlayNetworking.send(serverPlayer, payload);
     }

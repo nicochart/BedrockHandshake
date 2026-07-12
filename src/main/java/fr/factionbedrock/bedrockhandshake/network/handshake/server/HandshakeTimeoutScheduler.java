@@ -1,8 +1,7 @@
 package fr.factionbedrock.bedrockhandshake.network.handshake.server;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-
+import net.minecraft.server.level.ServerPlayer;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -12,7 +11,7 @@ public class HandshakeTimeoutScheduler
 {
     private static ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-    public static void schedule(MinecraftServer server, UUID playerId, ServerPlayerEntity player)
+    public static void schedule(MinecraftServer server, UUID playerId, ServerPlayer player)
     {
         scheduler.schedule(() ->
         {

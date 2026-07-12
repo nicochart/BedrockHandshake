@@ -2,9 +2,6 @@ package fr.factionbedrock.bedrockhandshake.util;
 
 import fr.factionbedrock.bedrockhandshake.BedrockHandshake;
 import fr.factionbedrock.bedrockhandshake.network.handshake.ResourcePackInfo;
-import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackProfile;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,34 +12,36 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackRepository;
 
 public class ResourcePackUtils
 {
-    public static List<ResourcePackInfo> getActivePacksInfo(ResourcePackManager resourcePackManager, String resourcePackDirectoryPath)
+    public static List<ResourcePackInfo> getActivePacksInfo(PackRepository resourcePackManager, String resourcePackDirectoryPath)
     {
-        List<ResourcePackProfile> loadedPackProfiles = getLoadedResourcePacksList(resourcePackManager);
+        List<Pack> loadedPackProfiles = getLoadedResourcePacksList(resourcePackManager);
         List<ResourcePackInfo> hashList = new ArrayList<>();
 
-        for (ResourcePackProfile profile : loadedPackProfiles) {hashList.add(getResourcePackInfo(profile, resourcePackDirectoryPath));}
+        for (Pack profile : loadedPackProfiles) {hashList.add(getResourcePackInfo(profile, resourcePackDirectoryPath));}
         return hashList;
     }
 
-    public static List<ResourcePackProfile> getLoadedResourcePacksList(ResourcePackManager resourcePackManager)
+    public static List<Pack> getLoadedResourcePacksList(PackRepository resourcePackManager)
     {
         //temporary solution to avoid mod list to appear in loaded packs
         List<String> loadedModIds = ModUtils.getLoadedModIds();
-        List<ResourcePackProfile> loadedResourcePacks = new ArrayList<>();
+        List<Pack> loadedResourcePacks = new ArrayList<>();
 
-        Collection<ResourcePackProfile> enabledPacks = resourcePackManager.getEnabledProfiles();
+        Collection<Pack> enabledPacks = resourcePackManager.getSelectedPacks();
         if (enabledPacks.isEmpty()) {return loadedResourcePacks;}
-        for (ResourcePackProfile profile : enabledPacks)
+        for (Pack profile : enabledPacks)
         {
             if (!profile.getId().contains("fabric") && !loadedModIds.contains(profile.getId())) {loadedResourcePacks.add(profile);}
         }
         return loadedResourcePacks;
     }
 
-    public static ResourcePackInfo getResourcePackInfo(ResourcePackProfile profile, String resourcePackDirectoryPath)
+    public static ResourcePackInfo getResourcePackInfo(Pack profile, String resourcePackDirectoryPath)
     {
         return new ResourcePackInfo(getPackSignature(profile.getId(), resourcePackDirectoryPath), profile.getId(), profile.getDescription().getString());
     }

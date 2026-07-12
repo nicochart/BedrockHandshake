@@ -3,23 +3,22 @@ package fr.factionbedrock.bedrockhandshake.network.payload;
 import fr.factionbedrock.bedrockhandshake.BedrockHandshake;
 import fr.factionbedrock.bedrockhandshake.network.handshake.ModInfo;
 import fr.factionbedrock.bedrockhandshake.network.handshake.ResourcePackInfo;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.packet.CustomPayload;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public record HandshakeData(boolean fromAdminTool, List<ModInfo> mods, List<ResourcePackInfo> packs) implements CustomPayload
+public record HandshakeData(boolean fromAdminTool, List<ModInfo> mods, List<ResourcePackInfo> packs) implements CustomPacketPayload
 {
-    public static final Id<HandshakeData> ID = new Id<>(BedrockHandshake.id("handshake_data"));
+    public static final Type<HandshakeData> ID = new Type<>(BedrockHandshake.id("handshake_data"));
 
-    public static final PacketCodec<RegistryByteBuf, HandshakeData> CODEC = PacketCodec.tuple(
-            PacketCodecs.BOOLEAN, HandshakeData::fromAdminTool,
-            PacketCodecs.collection(ArrayList::new, ModInfo.CODEC), HandshakeData::mods,
-            PacketCodecs.collection(ArrayList::new, ResourcePackInfo.CODEC), HandshakeData::packs,
+    public static final StreamCodec<RegistryFriendlyByteBuf, HandshakeData> CODEC = StreamCodec.composite(
+            ByteBufCodecs.BOOL, HandshakeData::fromAdminTool,
+            ByteBufCodecs.collection(ArrayList::new, ModInfo.CODEC), HandshakeData::mods,
+            ByteBufCodecs.collection(ArrayList::new, ResourcePackInfo.CODEC), HandshakeData::packs,
             HandshakeData::new);
 
-    @Override public Id<? extends CustomPayload> getId() {return ID;}
+    @Override public Type<? extends CustomPacketPayload> type() {return ID;}
 }

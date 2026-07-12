@@ -1,28 +1,28 @@
 package fr.factionbedrock.bedrockhandshake.network.handshake;
 
 import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeHelper;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 public record ResourcePackInfo(String packSignature, String fileName, String description)
 {
-    public static final PacketCodec<RegistryByteBuf, ResourcePackInfo> CODEC = PacketCodec.tuple(PacketCodecs.STRING, ResourcePackInfo::packSignature, PacketCodecs.STRING, ResourcePackInfo::fileName, PacketCodecs.STRING, ResourcePackInfo::description, ResourcePackInfo::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ResourcePackInfo> CODEC = StreamCodec.composite(ByteBufCodecs.STRING_UTF8, ResourcePackInfo::packSignature, ByteBufCodecs.STRING_UTF8, ResourcePackInfo::fileName, ByteBufCodecs.STRING_UTF8, ResourcePackInfo::description, ResourcePackInfo::new);
 
     @Override public String toString() {return "\"" + this.fileName + "\" : " + this.description + " (" + this.packSignature+ ")";}
 
-    public MutableText toText()
+    public MutableComponent toText()
     {
-        return this.toText(Formatting.WHITE, Text.literal(""));
+        return this.toText(ChatFormatting.WHITE, Component.literal(""));
     }
 
-    public MutableText toText(Formatting formatting, Text customPrefix)
+    public MutableComponent toText(ChatFormatting formatting, Component customPrefix)
     {
-        MutableText packInfo = Text.literal(customPrefix.getString()).styled(style -> style.withColor(formatting));
-        Text hashText = BedrockHandshakeHelper.textCopyable(packSignature);
+        MutableComponent packInfo = Component.literal(customPrefix.getString()).withStyle(style -> style.withColor(formatting));
+        Component hashText = BedrockHandshakeHelper.textCopyable(packSignature);
 
         return packInfo.append("\"").append(fileName).append("\" : ").append(description).append(", ").append(hashText);
     }

@@ -6,13 +6,12 @@ import fr.factionbedrock.bedrockhandshake.network.handshake.ModInfo;
 import fr.factionbedrock.bedrockhandshake.network.handshake.ResourcePackInfo;
 import fr.factionbedrock.bedrockhandshake.network.payload.HandshakeData;
 import fr.factionbedrock.bedrockhandshake.util.BedrockHandshakeHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.BannedPlayerEntry;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerConfigEntry;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.NameAndId;
+import net.minecraft.server.players.UserBanListEntry;
+import net.minecraft.world.entity.player.Player;
 import java.util.List;
 
 public class BedrockHandshakeVerifier
@@ -20,16 +19,16 @@ public class BedrockHandshakeVerifier
     public enum InfractionType{NONE, MOD, PACK, MOD_AND_PACK, NO_HANDSHAKE}
     public record Response(String list, InfractionType type) {}
 
-    public static void onHandshake(ServerPlayerEntity player, HandshakeData data)
+    public static void onHandshake(ServerPlayer player, HandshakeData data)
     {
-        if (PendingHandshakeTracker.isStillWaiting(player.getUuid())) {PendingHandshakeTracker.unmark(player.getUuid());}
+        if (PendingHandshakeTracker.isStillWaiting(player.getUUID())) {PendingHandshakeTracker.unmark(player.getUUID());}
 
         if (data.fromAdminTool())
         {
             BedrockHandshakeHelper.messageListsToPlayer(player, data.mods(), BedrockHandshake.MODS_WHITELIST, data.packs(), BedrockHandshake.PACKS_WHITELIST);
         }
 
-        if (!BedrockHandshakeHelper.isDedicated(player.getEntityWorld().getServer()) && !BedrockHandshake.DO_HANDSHAKE_ON_INTEGRATED_SERVER)
+        if (!BedrockHandshakeHelper.isDedicated(player.level().getServer()) && !BedrockHandshake.DO_HANDSHAKE_ON_INTEGRATED_SERVER)
         {
             BedrockHandshake.LOGGER.info("Bedrock Handshake - skipped player verification because server is not dedicated");
             return;
@@ -45,31 +44,31 @@ public class BedrockHandshakeVerifier
         }
     }
 
-    public static void onMissingHandshake(ServerPlayerEntity player)
+    public static void onMissingHandshake(ServerPlayer player)
     {
-        PendingHandshakeTracker.unmark(player.getUuid());
+        PendingHandshakeTracker.unmark(player.getUUID());
         BedrockHandshake.LOGGER.info("Bedrock Handshake - Server verifying player " + player.getName().getString() + " : no handshake response, kicked.");
         BedrockHandshakeVerifier.manageInvalidClient(player, "Kicked for not receiving mod list. Contact server administrator.");
     }
 
-    public static void manageInvalidClient(ServerPlayerEntity player, String message)
+    public static void manageInvalidClient(ServerPlayer player, String message)
     {
         String disconnectMessage = message;
-        if (!player.isDisconnected())
+        if (!player.hasDisconnected())
         {
             BedrockHandshakeHelper.increaseInfractionCount(player);
             int infractionCount = BedrockHandshakeHelper.getInfractionCount(player);
-            MinecraftServer server = player.getEntityWorld().getServer();
+            MinecraftServer server = player.level().getServer();
             if (infractionCount > BedrockHandshake.TOLERATED_INFRACTION_COUNT && server != null)
             {
                 disconnectMessage = "You have been banned for multiple infractions.";
-                server.getPlayerManager().getUserBanList().add(new BannedPlayerEntry(new PlayerConfigEntry(player.getUuid(), player.getStringifiedName()), null, BedrockHandshake.MOD_ID, null, disconnectMessage));
+                server.getPlayerList().getBans().add(new UserBanListEntry(new NameAndId(player.getUUID(), player.getPlainTextName()), null, BedrockHandshake.MOD_ID, null, disconnectMessage));
             }
-            player.networkHandler.disconnect(Text.literal(disconnectMessage));
+            player.connection.disconnect(Component.literal(disconnectMessage));
         }
     }
 
-    public static Response verify(PlayerEntity player, List<ModInfo> loadedMods, List<ResourcePackInfo> loadedPacks)
+    public static Response verify(Player player, List<ModInfo> loadedMods, List<ResourcePackInfo> loadedPacks)
     {
         if (BedrockHandshake.PLAYERS_WHITELIST.contains(player.getName().getString())) {return new Response("skipped player verification because he is bedrock_handshake-whitelisted", InfractionType.NONE);}
         else

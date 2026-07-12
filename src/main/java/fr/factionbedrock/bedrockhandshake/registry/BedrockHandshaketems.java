@@ -2,27 +2,27 @@ package fr.factionbedrock.bedrockhandshake.registry;
 
 import fr.factionbedrock.bedrockhandshake.BedrockHandshake;
 import fr.factionbedrock.bedrockhandshake.item.DebugItem;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.Item;
 
 public class BedrockHandshaketems
 {
-    public static final Item DEBUG_ITEM = register(Keys.DEBUG_ITEM.getValue().getPath(), new DebugItem(new Item.Settings().maxCount(1).registryKey(Keys.DEBUG_ITEM)));
+    public static final Item DEBUG_ITEM = register(Keys.DEBUG_ITEM.location().getPath(), new DebugItem(new Item.Properties().stacksTo(1).setId(Keys.DEBUG_ITEM)));
 
     public static class Keys
     {
-        public static final RegistryKey<Item> DEBUG_ITEM = createKey("debug_item");
+        public static final ResourceKey<Item> DEBUG_ITEM = createKey("debug_item");
 
-        private static RegistryKey<Item> createKey(String name)
+        private static ResourceKey<Item> createKey(String name)
         {
-            return RegistryKey.of(RegistryKeys.ITEM, BedrockHandshake.id(name));
+            return ResourceKey.create(Registries.ITEM, BedrockHandshake.id(name));
         }
     }
 
-    public static <T extends Item> T register(String name, T item) {return Registry.register(Registries.ITEM, BedrockHandshake.id(name), item);}
+    public static <T extends Item> T register(String name, T item) {return Registry.register(BuiltInRegistries.ITEM, BedrockHandshake.id(name), item);}
 
     public static void load() {}
 }

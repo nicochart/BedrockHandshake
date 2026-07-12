@@ -12,7 +12,7 @@ public class BedrockHandshakePlayerEvents
     {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
         {
-            UUID playerId = handler.player.getUuid();
+            UUID playerId = handler.player.getUUID();
 
             PendingHandshakeTracker.mark(playerId);
 
